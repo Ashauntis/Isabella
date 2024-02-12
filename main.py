@@ -1,6 +1,6 @@
 import pygame
 import sys
-import settings
+import config.settings as settings
 from Scenes.game import Game
 
 # Initialize the game

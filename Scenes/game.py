@@ -1,8 +1,9 @@
 import pygame
 import sys
-import settings 
-import colors
+import config.settings as settings 
+import config.colors as colors
 from Scenes.scene import Scene
+from Scenes.debug import Debug
 from Scenes.main_menu import MainMenu
 from Scenes.basement import Basement
 
@@ -11,10 +12,14 @@ class Game:
         pygame.init()
         self.screen_width = screen_width
         self.screen_height = screen_height
-        self.screen = pygame.display.set_mode((screen_width, screen_height))
+        if settings.FULLSCREEN:
+            self.screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)
+        else:
+            self.screen = pygame.display.set_mode((screen_width, screen_height))
 
         self.clock = pygame.time.Clock()
         self.scene_stack = []
+        self.debug = Debug(self)
 
         self.pressed = []
         self.just_pressed = []
@@ -38,12 +43,17 @@ class Game:
                 print(f"Removing scene: {scene_pop}")
                 self.remove_scene(scene_pop)
                 print(f"New scene stack: {self.scene_stack}")
+            print(str(settings.SCENE_LIST[scene] +"(self)"))
             self.scene_stack.append(eval(settings.SCENE_LIST[scene] +"(self)"))
             print(f"Loaded scene: {scene}")
             print(f"Current scene stack: {self.scene_stack}")
         else: 
             print(f"Scene {scene} not found in scene list. Defaulting to MainMenu")
             self.scene_stack.append(MainMenu(self))
+
+    def spawn_entity(self, entity, position):
+        self.scene_stack.append(entity(self, position))
+        print(f"Spawned entity: {str(entity)} at position: ({position[0]}, {position[1]})")
 
     def load_asset(self, asset_path: str):
         return pygame.image.load("assets/" + asset_path).convert_alpha()
@@ -54,7 +64,7 @@ class Game:
     def get_input(self):
         self.pressed = pygame.key.get_pressed()
         self.just_pressed = []
-
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                     pygame.quit()
@@ -71,11 +81,12 @@ class Game:
     def make_transparent_surface(self, size: tuple):
         return pygame.Surface(size, pygame.SRCALPHA, 32).convert_alpha()
 
-    def make_text(self, text, fontSize, color=colors.GRAY, font=None):
+    def make_text(self, text:str, fontSize: int, color: tuple=colors.GRAY, font:str=None):
+
         if font is None:
             font = "assets/" + settings.FONT
-
-        return pygame.font.Font(font, fontSize).render(text, 1, color)
+        
+        return pygame.font.Font(font, fontSize).render(str(text), 1, color)
 
     def blit_centered(self, source, target, position = (0.5, 0.5)):
 
@@ -103,6 +114,7 @@ class Game:
 
     def run(self):
         self.load_scene(settings.START_SCENE)
+
         if self.scene_stack == []:
             raise ValueError("No scene set for the game")
 
@@ -111,6 +123,10 @@ class Game:
             for scene in self.scene_stack:
                 scene.update()
                 scene.render()
+
+            self.debug.update()
+            self.debug.render()
+            self.debug.clear_data()
             
             pygame.display.flip()
             self.clock.tick(settings.FRAME_LIMIT)  # Cap the frame rate

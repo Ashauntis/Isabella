@@ -1,6 +1,7 @@
 import pygame
 import Scenes.scene as scene
-import colors
+import Scenes.player as player
+import config.colors as colors
 
 class Basement(scene.Scene):
     def __init__(self, game):

@@ -6,6 +6,8 @@ import config.colors as colors
 class MainMenu(scene.Scene):
     def __init__(self, game):
         super().__init__(game)
+        self.game = game
+        self.layer = "ui"
         
         self.background = self.game.make_transparent_surface((self.game.screen_width, self.game.screen_height))
         self.background.fill((colors.CREAM))

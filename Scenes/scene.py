@@ -5,6 +5,7 @@ class Scene:
         self.game = game
         self.screen = game.screen
         self.time = game.clock.get_time()
+        self.layer = None
 
     def update(self):
         pass

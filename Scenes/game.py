@@ -23,6 +23,7 @@ class Game:
 
         self.pressed = []
         self.just_pressed = []
+        self.joysticks = {}
 
     def add_scene(self, scene):
         self.scene_stack.append(scene)
@@ -62,6 +63,7 @@ class Game:
         return pygame.transform.scale(asset, size)
 
     def get_input(self):
+        # Handle Keyboard Events
         self.pressed = pygame.key.get_pressed()
         self.just_pressed = []
         
@@ -72,6 +74,20 @@ class Game:
 
             if event.type == pygame.KEYDOWN:
                 self.just_pressed.append(event.key)
+
+        # Handle Controller Events
+                
+            if event.type == pygame.JOYDEVICEADDED:
+                joy = pygame.joystick.Joystick(event.device_index)
+                self.joysticks[joy.get_instance_id()] = joy
+                print(f"Joystick {joy.get_instance_id()} connencted")
+
+            if event.type == pygame.JOYDEVICEREMOVED:
+                del self.joysticks[event.instance_id]
+                print(f"Joystick {event.instance_id} disconnected")
+
+            if event.type == pygame.JOYBUTTONDOWN:
+                self.just_pressed.append(event.button)
 
         # Toggle our Debug Setting
         if pygame.K_F11 in self.just_pressed:
@@ -120,9 +136,15 @@ class Game:
 
         while True:
             self.get_input()
-            for scene in self.scene_stack:
-                scene.update()
-                scene.render()
+            layers = ['background', 'obstacle', 'player', 'enemy', 'ui', 'debug']
+            for layer in layers:
+                for scene in self.scene_stack: 
+                    if scene.layer == layer: 
+                        scene.update()
+                        scene.render()
+                if scene.layer is None:
+                    print('You forgot to set the layer for scene: ' + str(scene) + '! Defaulting to debug layer.')
+                    scene.layer = 'debug'
 
             self.debug.update()
             self.debug.render()

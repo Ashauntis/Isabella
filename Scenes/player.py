@@ -2,6 +2,7 @@ import pygame
 import Scenes.scene as scene
 import config.colors as colors
 from utility.vector import Vector2
+from utility.spritesheet import SpriteSheet
 
 class Player(scene.Scene):
     def __init__(self, game, position=(0, 0)):
@@ -10,8 +11,10 @@ class Player(scene.Scene):
         self.layer = "player"
 
         # draw a circle to represent the player
-        self.sprite = game.make_transparent_surface((50, 50))
-        pygame.draw.circle(self.sprite, (colors.CREAM), (25,25), 25)
+        # self.sprite = game.make_transparent_surface((50, 50))
+        # pygame.draw.circle(self.sprite, (colors.CREAM), (25,25), 25)
+
+        self.sprite = SpriteSheet("assets/player_idle.png").image_at((0, 0, 48, 48))
 
         self.position = Vector2(position[0], position[1])
         self.velocity = Vector2(0, 0)

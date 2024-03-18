@@ -80,7 +80,7 @@ class Game:
             if event.type == pygame.JOYDEVICEADDED:
                 joy = pygame.joystick.Joystick(event.device_index)
                 self.joysticks[joy.get_instance_id()] = joy
-                print(f"Joystick {joy.get_instance_id()} connencted")
+                print(f"Joystick {joy.get_instance_id()} connected")
 
             if event.type == pygame.JOYDEVICEREMOVED:
                 del self.joysticks[event.instance_id]

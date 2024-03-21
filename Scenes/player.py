@@ -2,7 +2,9 @@ import pygame
 import Scenes.scene as scene
 import config.colors as colors
 from utility.vector import Vector2
+from utility.animated_sprite import AnimatedSprite
 from utility.spritesheet import SpriteSheet
+from utility.animation import Animation
 
 class Player(scene.Scene):
     def __init__(self, game, position=(0, 0)):
@@ -10,11 +12,11 @@ class Player(scene.Scene):
         self.game = game
         self.layer = "player"
 
-        # draw a circle to represent the player
-        # self.sprite = game.make_transparent_surface((50, 50))
-        # pygame.draw.circle(self.sprite, (colors.CREAM), (25,25), 25)
-
-        self.sprite = SpriteSheet("assets/player_idle.png").image_at((0, 0, 48, 48))
+        # Load our Player Animations
+        self.sprite = AnimatedSprite(animations={
+            "idle": Animation(images = SpriteSheet("assets/player_idle.png").load_grid_images(1, 10), dur = 6),
+            "walk": Animation(images = SpriteSheet("assets/player_walk.png").load_grid_images(1, 10), dur = 6)
+        }, default_animation="idle")
 
         self.position = Vector2(position[0], position[1])
         self.velocity = Vector2(0, 0)
@@ -38,6 +40,9 @@ class Player(scene.Scene):
         if self.game.pressed[pygame.K_DOWN]:
             self.velocity.y = self.speed
 
+        if self.game.pressed[pygame.K_SPACE]:
+            self.sprite.switch_animation("walk")
+
         self.velocity.scale_velocity()
         self.position += self.velocity
 
@@ -46,4 +51,6 @@ class Player(scene.Scene):
         self.handle_movement()
 
     def render(self):
-        self.screen.blit(self.sprite, self.position.pos())
+        self.sprite.update()
+        # self.sprite.draw(self.screen, self.position.pos())
+        self.screen.blit(self.sprite.get_frame(), self.position.pos())

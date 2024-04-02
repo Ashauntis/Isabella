@@ -14,13 +14,19 @@ class Player(scene.Scene):
 
         # Load our Player Animations
         self.sprite = AnimatedSprite(animations={
-            "idle": Animation(images = SpriteSheet("assets/player_idle.png").load_grid_images(1, 10), dur = 6),
-            "walk": Animation(images = SpriteSheet("assets/player_walk.png").load_grid_images(1, 10), dur = 6)
+            "idle": Animation(images = SpriteSheet("assets/player/player_idle.png").load_grid_images(1, 10), dur = 6),
+            "walk": Animation(images = SpriteSheet("assets/player/player_walk.png").load_grid_images(1, 8), dur = 6),
+            "hurt": Animation(images = SpriteSheet("assets/player/player_hurt.png").load_grid_images(1, 4), dur = 6, loop=False)
         }, default_animation="idle")
 
         self.position = Vector2(position[0], position[1])
         self.velocity = Vector2(0, 0)
         self.speed = 3.0
+        
+        # track the sprites horizontal facing direction
+        # false = right, true = left
+        self.flip = False
+
 
     def handle_movement(self):
         self.velocity = Vector2(0, 0)
@@ -32,16 +38,21 @@ class Player(scene.Scene):
                 self.velocity.y = self.game.joysticks[joystick].get_axis(1) * self.speed
 
         if self.game.pressed[pygame.K_LEFT]:
+            self.flip = True
             self.velocity.x = -self.speed
         if self.game.pressed[pygame.K_RIGHT]:
+            self.flip = False
             self.velocity.x = self.speed
         if self.game.pressed[pygame.K_UP]:
             self.velocity.y = -self.speed
         if self.game.pressed[pygame.K_DOWN]:
             self.velocity.y = self.speed
 
-        if self.game.pressed[pygame.K_SPACE]:
-            self.sprite.switch_animation("walk")
+        if pygame.K_SPACE in self.game.just_pressed:
+            if self.sprite.current_animation == "walk":
+                self.sprite.switch_animation("hurt")
+            else:
+                self.sprite.switch_animation("walk")
 
         self.velocity.scale_velocity()
         self.position += self.velocity
@@ -52,5 +63,4 @@ class Player(scene.Scene):
 
     def render(self):
         self.sprite.update()
-        # self.sprite.draw(self.screen, self.position.pos())
-        self.screen.blit(self.sprite.get_frame(), self.position.pos())
+        self.screen.blit(self.sprite.image, self.position.pos())

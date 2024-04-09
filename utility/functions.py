@@ -1,25 +1,16 @@
+import pygame
 import random
 import Scenes.room as Room
 
-MAX_FLOOR_SIZE = (20, 20)
+def make_transparent_surface(size: tuple):
+    return pygame.Surface(size, pygame.SRCALPHA, 32).convert_alpha()
 
-def generate_level(game, floor_depth, xl=False, void=False):
-    max_rooms = 20
-    if xl:
-        max_rooms = 45
-        
-    desired_rooms = constrain(int(3.33 * floor_depth + 5), 0, max_rooms)
-    desired_deadends = 5
-    if xl: 
-        desired_deadends += 1
-    if void:
-        desired_deadends += 2
+def scale_asset(asset, size: tuple):
+    return pygame.transform.scale(asset, size)
 
-    
-    
+def load_asset(asset_path: str):
+    return pygame.image.load("assets/" + asset_path).convert_alpha()
 
 def constrain(val, min_val, max_val):
     return min(max_val, max(min_val, val))
 
-level = generate_level(None, 1)
-print(level)

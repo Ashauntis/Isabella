@@ -26,7 +26,7 @@ class AnimatedSprite:
         self.image = self.animations[self.current_animation].get_current_image()
 
 
-        print(f"Current Animation: {self.current_animation}, Current frame: {self.animations[self.current_animation].current_frame}")
+        # print(f"Current Animation: {self.current_animation}, Current frame: {self.animations[self.current_animation].current_frame}")
 
     # Switch to a different animation
     def switch_animation(self, key, frame = 0):

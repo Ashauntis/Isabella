@@ -1,47 +1,37 @@
+from utility.functions import * 
+import config.colors as colors
+
 class Room:
-    def __init__(self, game, id, position: tuple, room_type="basic"):
-        # create a unique id with a timestamp
+    def __init__(self, game, flags = 0):
         self.game = game
-        self.id = id
-        self.room_type = room_type
-        self.pickups = []
-        self.enemies = []
-        self.x = position[0]
-        self.y = position[1]
-        self.connections = {
-            "up": {
-                "pos": (self.x, self.y - 1),
-                "room": None
-            },
-            "down": {
-                "pos": (self.x, self.y + 1),
-                "room": None
-            },
-            "left": {
-                "pos": (self.x - 1, self.y),
-                "room": None
-            },
-            "right": {
-                "pos": (self.x + 1, self.y),
-                "room": None
-            }
+        room_bits = {
+            0b0001_0000: "start",
+            0b0010_0000: "boss",
         }
 
-    def add_connection(self, direction, room):
-        self.connections[direction]["room"] = room
+        # for key, room_type in flag_key.items():
+        #     if flags & key:
+        #         self.room_type = room_type
+        #         break
 
-    def get_connections(self):
-        return self.connections
-    
-    def get_available_connections(self):
-        available = []
-        for direction in self.connections:
-            if self.connections[direction]["room"] == None:
-                available.append(self.connections[direction]["pos"])
-        return available
-    
-    def get_position(self):
-        return (self.x, self.y)
+        self.background = make_transparent_surface((self.game.screen_width, self.game.screen_height))
+        self.background.fill((colors.BLACK))
+        self.background_image = load_asset("basement.png")
+        # ensure the background image is the same size as the screen
+        self.background_image = scale_asset(self.background_image, (self.game.screen_width, self.game.screen_height))
+
+        if flags in room_bits:
+            self.room_type = room_bits[flags]
+        else:
+            self.room_type = "basic"
+
+        self.pickups = []
+        self.enemies = []
+
+        self.north = flags & 0b0000_0001
+        self.east  = flags & 0b0000_0010
+        self.south = flags & 0b0000_0100
+        self.west  = flags & 0b0000_1000
 
     def display_info(self):
         print(f"Room Number: {self.room_number}")

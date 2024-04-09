@@ -27,7 +27,7 @@ class Animation:
 
     def update(self):
         self.frame_count += 1 
-        print(f"Frame count: {self.frame_count}, Frame Duration: {self.dur}")
+        # print(f"Frame count: {self.frame_count}, Frame Duration: {self.dur}")
         if self.frame_count > self.dur:
             self.frame_count = 0
             self.selected_frame_index += 1

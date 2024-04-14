@@ -1,6 +1,7 @@
 import config.settings as settings
 import Scenes.scene as scene
 import config.colors as colors
+from utility.functions import *
 
 # A panel for displaying debug information/text within the game
 class Debug(scene.Scene):
@@ -11,7 +12,7 @@ class Debug(scene.Scene):
         self.data = ["Debug:",]
 
         # make a transparent background
-        self.background = self.game.make_transparent_surface(self.screen.get_size())
+        self.background = make_transparent_surface(self.screen.get_size())
         self.background.fill(colors.setAlpha(colors.GRAY, 200))
 
     def clear_data(self):
@@ -29,7 +30,7 @@ class Debug(scene.Scene):
 
         for i, element in enumerate(self.data):
             # update with the new text
-            text_element = self.game.make_text(element, 8, (255, 255, 255))
+            text_element = make_text(element, 8, (255, 255, 255))
             # draw the text to the top left of the background
             self.background.blit(text_element, (10, (i * 30) + 10))
 

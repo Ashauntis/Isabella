@@ -4,11 +4,15 @@
 import numpy as np
 
 # count the number of rooms in the map
+
+
 def count_rooms(floor_map: np.ndarray) -> int:
 
     return len(floor_map.nonzero()[0])
 
 # count the number of dead ends in the map
+
+
 def count_dead_ends(floor_map: np.ndarray) -> int:
     dead_ends = 0
     for x in range(floor_map.shape[0]):
@@ -16,10 +20,13 @@ def count_dead_ends(floor_map: np.ndarray) -> int:
             # and against 0001 1111 to get the hallway bits
             # and the start room bit to not count the start
             # room as a dead end
-            room_flags = floor_map[x, y] & 31
+
+
+            room_flags = floor_map[x, y]["flags"] & 31
             if room_flags in [1, 2, 4, 8]:
                 dead_ends += 1
     return dead_ends
+
 
 def potential_dead_ends(floor_map: np.ndarray) -> list:
     # make our potential dead end list
@@ -30,12 +37,12 @@ def potential_dead_ends(floor_map: np.ndarray) -> list:
     for x in range(1, floor_map.shape[0] - 1):
         for y in range(1, floor_map.shape[1] - 1):
             # if we find an empty space
-            if floor_map[x, y] == 0:
-                if (floor_map[x - 1, y] not in avoid or
-                    floor_map[x, y - 1] not in avoid or
-                    floor_map[x + 1, y] not in avoid or
-                    floor_map[x, y + 1] not in avoid
-                ):
+            if floor_map[x, y]["flags"] == 0:
+                if (floor_map[x - 1, y]["flags"] not in avoid or
+                        floor_map[x, y - 1]["flags"] not in avoid or
+                        floor_map[x + 1, y]["flags"] not in avoid or
+                        floor_map[x, y + 1]["flags"] not in avoid
+                        ):
                     pde.append((x, y))
 
     return pde
@@ -69,10 +76,15 @@ def make_floor(minimum_rooms=10, desired_dead_ends=3, size=16):
     y = midpoint
 
     # generate the empty map
-    floor_map = np.zeros((size, size), dtype=int)
+    dtype = np.dtype([
+        ("flags", np.uint8),  # bit-wise flags
+        # create a room object to hold the room data
+        ("room", "O"),
+    ])
+    floor_map = np.zeros((size, size), dtype=dtype)
 
     # set the starting room bit
-    floor_map[x, y] |= 16
+    floor_map[x, y]["flags"] |= 16
 
     while count_rooms(floor_map) < minimum_rooms:
 
@@ -80,22 +92,21 @@ def make_floor(minimum_rooms=10, desired_dead_ends=3, size=16):
         direction = np.random.choice(["up", "down", "left", "right"])
 
         if direction == "up" and y > 0:
-            floor_map[x, y] |= 1
+            floor_map[x, y]["flags"] |= 1
             y -= 1
-            floor_map[x, y] |= 4
+            floor_map[x, y]["flags"] |= 4
         elif direction == "right" and x < size - 1:
-            floor_map[x, y] |= 2
+            floor_map[x, y]["flags"] |= 2
             x += 1
-            floor_map[x, y] |= 8
+            floor_map[x, y]["flags"] |= 8
         elif direction == "down" and y < size - 1:
-            floor_map[x, y] |= 4
+            floor_map[x, y]["flags"] |= 4
             y += 1
-            floor_map[x, y] |= 1
+            floor_map[x, y]["flags"] |= 1
         elif direction == "left" and x > 0:
-            floor_map[x, y] |= 8
+            floor_map[x, y]["flags"] |= 8
             x -= 1
-            floor_map[x, y] |= 2
-
+            floor_map[x, y]["flags"] |= 2
 
     # loop through the map and find 0s next to values that
     # are not 1,2,4 or 8 and create a room adjacent to them
@@ -112,33 +123,32 @@ def make_floor(minimum_rooms=10, desired_dead_ends=3, size=16):
         print(f"Adding dead end at {x}, {y}")
 
         # check to the left first
-        if floor_map[x - 1, y] not in avoid:
+        if floor_map[x - 1, y]["flags"] not in avoid:
             # if there is an existing room that's
             # not already a dead end, add a dead end
             # to it's right
-            floor_map[x - 1, y] |= 2
-            floor_map[x, y] |= 8
+            floor_map[x - 1, y]["flags"] |= 2
+            floor_map[x, y]["flags"] |= 8
 
         # if not to the left then check above
-        elif floor_map[x, y - 1] not in avoid:
+        elif floor_map[x, y - 1]["flags"] not in avoid:
             # if there is an existing room that's
             # not already a dead end, add a dead end
-            floor_map[x, y - 1] |= 4
-            floor_map[x, y] |= 1
+            floor_map[x, y - 1]["flags"] |= 4
+            floor_map[x, y]["flags"] |= 1
 
         # if not above or to the left then check to the right
-        elif floor_map[x + 1, y] not in avoid:
+        elif floor_map[x + 1, y]["flags"] not in avoid:
             # if there is an existing room that's
             # not already a dead end, add a dead end
-            floor_map[x + 1, y] |= 8
-            floor_map[x, y] |= 2
+            floor_map[x + 1, y]["flags"] |= 8
+            floor_map[x, y]["flags"] |= 2
         # if not any of those then check finally check below
-        elif floor_map[x, y + 1] not in avoid:
+        elif floor_map[x, y + 1]["flags"] not in avoid:
             # if there is an existing room that's
             # not already a dead end, add a dead end
-            floor_map[x, y + 1] |= 1
-            floor_map[x, y] |= 4
-
+            floor_map[x, y + 1]["flags"] |= 1
+            floor_map[x, y]["flags"] |= 4
 
     # set the boss room as the furthest dead end room from the starting room
 
@@ -151,49 +161,46 @@ def make_floor(minimum_rooms=10, desired_dead_ends=3, size=16):
     # to place the boss in.
     for x in range(floor_map.shape[0]):
         for y in range(floor_map.shape[1]):
-            if floor_map[x, y] in [1, 2, 4, 8]:
+            if floor_map[x, y]["flags"] in [1, 2, 4, 8]:
                 distance = abs(midpoint - x) + abs(midpoint - y)
                 if distance > search_distance:
                     search_x = x
                     search_y = y
                     search_distance = distance
 
-    floor_map[search_x, search_y] |= 32
+    floor_map[search_x, search_y]["flags"] |= 32
 
     # place the compass room in the room closest dead end to the starting room
     search_x = midpoint
     search_y = midpoint
-    search_distance = size * 4 # set to a high value to ensure the first room is closer
+    search_distance = size * 4  # set to a high value to ensure the first room is closer
 
     for x in range(floor_map.shape[0]):
         for y in range(floor_map.shape[1]):
-            if floor_map[x, y] in [1, 2, 4, 8]:
+            if floor_map[x, y]["flags"] in [1, 2, 4, 8]:
                 distance = abs(midpoint - x) + abs(midpoint - y)
                 if distance < search_distance:
                     search_x = x
                     search_y = y
                     search_distance = distance
 
-    floor_map[search_x, search_y] |= 64
-
+    floor_map[search_x, search_y]["flags"] |= 64
 
     # place the map room in the next closest dead end to the starting room
     search_x = midpoint
     search_y = midpoint
-    search_distance = size * 4 # set to a high value to ensure the first room is closer
+    search_distance = size * 4  # set to a high value to ensure the first room is closer
 
     for x in range(floor_map.shape[0]):
         for y in range(floor_map.shape[1]):
-            if floor_map[x, y] in [1, 2, 4, 8]:
+            if floor_map[x, y]["flags"] in [1, 2, 4, 8]:
                 distance = abs(midpoint - x) + abs(midpoint - y)
                 if distance < search_distance:
                     search_x = x
                     search_y = y
                     search_distance = distance
 
-    floor_map[search_x, search_y] |= 128
-
-
+    floor_map[search_x, search_y]["flags"] |= 128
 
     print("Final map:")
     print(floor_map)
@@ -202,4 +209,3 @@ def make_floor(minimum_rooms=10, desired_dead_ends=3, size=16):
     print("Dead Ends: ", count_dead_ends(floor_map))
 
     return floor_map
-

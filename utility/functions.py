@@ -1,7 +1,6 @@
 import pygame
 import sys
 import config.settings as settings 
-import Scenes.room as Room
 import numpy as np
 import config.colors as colors
 

@@ -22,7 +22,7 @@ class Basement(scene.Scene):
 
         # create our floor
         self.level_map = mapmaker.make_floor()
-        print(self.level_map)
+        # print(self.level_map)
 
 
         # for x in range(self.level_map.shape[0]):

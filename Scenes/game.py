@@ -2,7 +2,6 @@ import pygame
 import sys
 import config.settings as settings 
 import config.colors as colors
-from Scenes.scene import Scene
 from Scenes.debug import Debug
 from Scenes.main_menu import MainMenu
 from Scenes.basement import Basement
@@ -32,8 +31,6 @@ class Game:
 
         while True:
             self.pressed, self.just_pressed, self.joysticks = get_input()
-            if len(self.just_pressed) > 1:
-                print(f"Just Pressed: {self.just_pressed}")
             layers = ['background', 'obstacle', 'player', 'enemy', 'ui', 'debug']
             for layer in layers:
                 for scene in self.scene_stack: 

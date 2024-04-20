@@ -7,8 +7,10 @@ import numpy as np
 
 
 def count_rooms(floor_map: np.ndarray) -> int:
+    room_count = len(floor_map.nonzero()[0])
+    print(f"Room Count: {room_count}")
 
-    return len(floor_map.nonzero()[0])
+    return room_count
 
 # count the number of dead ends in the map
 

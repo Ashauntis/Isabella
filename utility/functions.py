@@ -95,6 +95,9 @@ def blit_centered(source, target, position = (0.5, 0.5)):
     source_position.centery = target.get_rect().centery * position[1] * 2
     target.blit(source, source_position)
 
+def blit(source, target, position = (0, 0)):
+    target.blit(source, position)
+
 
 # This function takes a binary set of flags a key dictionary and returns a list of keys that match the flags
 # 

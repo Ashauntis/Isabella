@@ -96,3 +96,5 @@ print(f"Keys: {example_room.binary_key(0b0001_0001, {
         })}")
 
 print(f"Room after Initialization and setup: {floor_map[1,2]["room"]}")
+
+print(floor_map[1,2]["flags"])

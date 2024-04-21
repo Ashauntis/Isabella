@@ -8,7 +8,7 @@ import numpy as np
 
 def count_rooms(floor_map: np.ndarray) -> int:
     room_count = len(floor_map.nonzero()[0])
-    print(f"Room Count: {room_count}")
+    # print(f"Room Count: {room_count}")
 
     return room_count
 
@@ -117,12 +117,12 @@ def make_floor(minimum_rooms=10, desired_dead_ends=3, size=16):
 
     # new code to add dead ends to the map
     while desired_dead_ends > count_dead_ends(floor_map) and len(potential_dead_ends(floor_map)) > 0:
-        print("Potential dead ends:")
+        # print("Potential dead ends:")
         pde = potential_dead_ends(floor_map)
-        print(pde)
+        # print(pde)
         x, y = pde[np.random.choice(len(pde))]
 
-        print(f"Adding dead end at {x}, {y}")
+        # print(f"Adding dead end at {x}, {y}")
 
         # check to the left first
         if floor_map[x - 1, y]["flags"] not in avoid:
@@ -204,10 +204,10 @@ def make_floor(minimum_rooms=10, desired_dead_ends=3, size=16):
 
     floor_map[search_x, search_y]["flags"] |= 128
 
-    print("Final map:")
-    print(floor_map)
-    print("Final Stats:")
-    print("Rooms: ", count_rooms(floor_map))
-    print("Dead Ends: ", count_dead_ends(floor_map))
+    # print("Final map:")
+    # print(floor_map)
+    # print("Final Stats:")
+    # print("Rooms: ", count_rooms(floor_map))
+    # print("Dead Ends: ", count_dead_ends(floor_map))
 
     return floor_map

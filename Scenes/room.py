@@ -6,7 +6,7 @@ class Room:
         self.game = game
         self.room_type = None
 
-        print(f"Room Flags: {flags}")
+        # print(f"Room Flags: {flags}")
 
         room_bits = {
             0b0000_0001: "north",
@@ -18,7 +18,7 @@ class Room:
         }
 
         self.flags = binary_key(flags, room_bits)
-        print(f"Room Flags: {self.flags}")
+        # print(f"Room Flags: {self.flags}")
 
         for flag in self.flags:
             if flag == "start":

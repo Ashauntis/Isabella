@@ -10,6 +10,7 @@ from utility.functions import get_input
 class Game:
     def __init__(self, screen_width, screen_height):
         pygame.init()
+        self.basement = None # this will hold a reference to basement later
         self.screen_width = screen_width
         self.screen_height = screen_height
         if settings.FULLSCREEN:
@@ -82,11 +83,19 @@ class Game:
                 print(f"New scene stack: {self.scene_stack}")
             print(str(settings.SCENE_LIST[scene] +"(self)"))
             self.scene_stack.append(eval(settings.SCENE_LIST[scene] +"(self)"))
+            # if the scene was "basement" save a reference to it in .basement
+            if scene.lower() == "basement":
+                self.basement = self.scene_stack[-1]
             print(f"Loaded scene: {scene}")
             print(f"Current scene stack: {self.scene_stack}")
         else: 
             print(f"Scene {scene} not found in scene list. Defaulting to MainMenu")
             self.scene_stack.append(MainMenu(self))
+
+    def spawn_player_entity(self, entity, position):
+        self.player = entity(self, position)
+        self.scene_stack.append(self.player)
+        print(f"Spawned player entity: {str(entity)} at position: ({position[0]}, {position[1]})")
 
     def spawn_entity(self, entity, position):
         self.scene_stack.append(entity(self, position))

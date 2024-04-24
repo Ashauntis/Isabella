@@ -18,6 +18,14 @@ class Basement(scene.Scene):
         # track what room we're in
         self.current_location = (map_size//2, map_size//2)
 
+        # transition utilities
+        self.transition_surface = None
+        self.old_room = None
+        self.transition_duration = 0
+        self.transition_time = 0
+        self.transition_speed = 1
+        self.transition_direction = "None"
+
         # create our floor
         self.level_map = mapmaker.make_floor(size=map_size)
 
@@ -37,19 +45,70 @@ class Basement(scene.Scene):
         self.room.build_room(SpriteSheet("assets/DungeonStarter/DungeonStarter.png"))
         self.room_surface = self.level_map[self.current_location]["room"].room_surface
 
-    def transition_room(self, direction = "north"):
-        self.current_location = (self.current_location[0] + 1, self.current_location[1])
-        old_room = self.room_surface
-        new_room = self.make_room()
+    def transition_room(self, direction = "north", duration = 60):
+        print("Transition room called")
+        # the number of frames it will take to complete the animation
+        self.transition_duration = duration
+        self.transition_time = duration
 
-        # TODO finish this :)
+        self.transition_direction = direction
+        if direction == "north":
+            self.current_location = (self.current_location[0], self.current_location[1] - 1)
+            print(f"Transitioning North, current location: {self.current_location}")
+        elif direction == "south":
+            self.current_location = (self.current_location[0], self.current_location[1] + 1)
+            print(f"Transitioning South, current location: {self.current_location}")
+        elif direction == "west":
+            self.current_location = (self.current_location[0] - 1, self.current_location[1])
+            print(f"Transitioning West, current location: {self.current_location}")
+        elif direction == "east":
+            self.current_location = (self.current_location[0] + 1, self.current_location[1])
+            print(f"Transitioning East, current location: {self.current_location}")
 
-        self.room_surface = new_room.room_surface
+        # keep a snapshot of our current room
+        self.old_room = self.room_surface
+        self.make_room()
+
+        # create our surface to animate the transition
+        self.transition_surface = pygame.Surface(self.room_surface.get_size())
+        self.transition_surface.fill(colors.BLACK)
+
 
 
     def update(self):
-        if pygame.K_p in self.game.just_pressed:
-            self.room.transition_room()
+        # transition stuff
+        if self.transition_time > 0:
+            self.transition_time -= self.transition_speed
+            
+            # transition percentage
+            tp = (self.transition_duration - self.transition_time) / self.transition_duration
+            
+            # if we're transitioning, update the transition surface based on the direction and time
+            if self.transition_direction == "north":
+                self.transition_surface.blit(self.room_surface, (0, (-self.game.screen_height) * (1 - tp)))
+                self.transition_surface.blit(self.old_room, (0, self.game.screen_height * tp))
+            elif self.transition_direction == "south":
+                self.transition_surface.blit(self.room_surface, (0, self.game.screen_height * (1-tp)))
+                self.transition_surface.blit(self.old_room, (0, -self.game.screen_height * tp))
+            elif self.transition_direction == "west":
+                self.transition_surface.blit(self.room_surface, (-self.game.screen_width + (tp * self.game.screen_width), 0))
+                self.transition_surface.blit(self.old_room, (tp * self.game.screen_width, 0))
+            elif self.transition_direction == "east":
+                self.transition_surface.blit(self.room_surface, (self.game.screen_width * (1 - tp), 0))
+                self.transition_surface.blit(self.old_room, (-self.game.screen_width * tp, 0))
+            return
+    
+        if pygame.K_UP in self.game.just_pressed and "north" in self.room.flags:
+                self.transition_room(direction = "north")
+        elif pygame.K_DOWN in self.game.just_pressed and "south" in self.room.flags:
+            self.transition_room(direction = "south")
+        elif pygame.K_LEFT in self.game.just_pressed and "west" in self.room.flags:
+            self.transition_room(direction = "west")
+        elif pygame.K_RIGHT in self.game.just_pressed and "east" in self.room.flags:
+            self.transition_room(direction = "east")
 
     def render(self):
-        self.screen.blit(self.room_surface, (0, 0))
+        if self.transition_time > 0:
+            self.screen.blit(self.transition_surface, (0, 0))
+        else:
+            self.screen.blit(self.room_surface, (0, 0))

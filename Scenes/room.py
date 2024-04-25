@@ -120,4 +120,5 @@ class Room:
             if "west" in self.flags:
                 self.room_surface.blit(self.tileset[16+j], (0,(10+j)*16+4))
         
+        # This return statement isn't currently being used, but I'm leaving it in for now
         return self.room_surface

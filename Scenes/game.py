@@ -8,15 +8,30 @@ from Scenes.basement import Basement
 from utility.functions import get_input
 
 class Game:
-    def __init__(self, screen_width, screen_height):
+    def __init__(self):
         pygame.init()
+
         self.basement = None # this will hold a reference to basement later
-        self.screen_width = screen_width
-        self.screen_height = screen_height
+        self.screen_width = settings.SCREEN_WIDTH
+        self.screen_height = settings.SCREEN_HEIGHT
+
+        # desktop
         if settings.FULLSCREEN:
-            self.screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)
+            self.screen: pygame.Surface = pygame.display.set_mode(
+                settings.RESOLUTION, pygame.FULLSCREEN | pygame.SCALED
+            )
         else:
-            self.screen = pygame.display.set_mode((screen_width, screen_height))
+            self.screen: pygame.Surface = pygame.display.set_mode(
+                settings.RESOLUTION, pygame.SCALED
+            )
+
+
+        pygame.display.set_caption("Isabella's Escape")
+
+        # if settings.FULLSCREEN:
+        #     self.screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN )
+        # else:
+        #     self.screen = pygame.display.set_mode((screen_width, screen_height))
 
         self.clock = pygame.time.Clock()
         self.scene_stack = []

@@ -5,7 +5,7 @@ import config.colors as colors
 import utility.mapmaker as mapmaker
 from Scenes.room import Room
 from utility.spritesheet import SpriteSheet
-from utility.functions import *
+import utility.functions as fn
 
 class Basement(scene.Scene):
     def __init__(self, game, map_size = 20):

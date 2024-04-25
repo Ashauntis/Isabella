@@ -11,11 +11,11 @@ class Player(scene.Scene):
         super().__init__(game)
         self.game = game
         self.layer = "player"
-
+        self.spritesheet = SpriteSheet("assets/Character/Girl-Sheet.png").load_grid_images(1, 44)
         # Load our Player Animations
         self.sprite = AnimatedSprite(animations={
-            "idle": Animation(images = SpriteSheet("assets/player/player_idle.png").load_grid_images(1, 10), dur = 6),
-            "walk": Animation(images = SpriteSheet("assets/player/player_walk.png").load_grid_images(1, 8), dur = 6),
+            "idle": Animation(images = self.spritesheet[0:2], dur = 60),
+            "walk": Animation(images = [self.spritesheet[2], self.spritesheet[3], self.spritesheet[4], self.spritesheet[5]], dur = 60),
             "hurt": Animation(images = SpriteSheet("assets/player/player_hurt.png").load_grid_images(1, 4), dur = 6, loop=False)
         }, default_animation="idle")
 

@@ -30,6 +30,8 @@ class AnimatedSprite:
 
     # Switch to a different animation
     def switch_animation(self, key, frame = 0):
+        if key == self.current_animation:
+            return
         # check if the animations dict has a key of the given key
         if key in self.animations:
             self.current_animation = key

@@ -46,6 +46,7 @@ class Basement(scene.Scene):
         self.room_surface = self.level_map[self.current_location]["room"].room_surface
 
     def transition_room(self, direction = "north", duration = 60):
+        return
         print("Transition room called")
         # the number of frames it will take to complete the animation
         self.transition_duration = duration

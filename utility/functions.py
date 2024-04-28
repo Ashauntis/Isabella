@@ -16,14 +16,8 @@ def load_asset(asset_path: str):
 def constrain(val, min_val, max_val):
     return min(max_val, max(min_val, val))
 
-def load_asset(asset_path: str):
-    return pygame.image.load("assets/" + asset_path).convert_alpha()
-
-def scale_asset(asset, size: tuple):
-    return pygame.transform.scale(asset, size)
-
 # returns an array of input types
-def get_input():
+def get_input(game):
 
     # Handle Keyboard Events
     pressed = pygame.key.get_pressed()
@@ -37,6 +31,7 @@ def get_input():
 
         if event.type == pygame.KEYDOWN:
             # print(f"Key Down: {event.key}")
+            game.console.log(f"Key Down: {event.key}")
             just_pressed.append(event.key)
 
         # Handle Controller Events
@@ -61,15 +56,14 @@ def get_input():
 
     return pressed, just_pressed, joysticks
 
-def make_transparent_surface(size: tuple):
-    return pygame.Surface(size, pygame.SRCALPHA, 32).convert_alpha()
-
-def make_text(text:str, fontSize: int, color: tuple=colors.GRAY, font:str=None):
+def make_text(text:str, fontSize: int, color: tuple=colors.WHITE, font: str=None):
 
     if font is None:
         font = "assets/" + settings.FONT
+        return pygame.font.Font(font, fontSize).render(str(text), 1, color)
     
-    return pygame.font.Font(font, fontSize).render(str(text), 1, color)
+    return pygame.font.SysFont(font, fontSize).render(str(text), 1, color)
+    
 
 def blit_centered(source, target, position = (0.5, 0.5)):
 

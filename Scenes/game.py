@@ -2,7 +2,7 @@ import pygame
 import sys
 import config.settings as settings 
 import config.colors as colors
-from Scenes.debug import Debug
+from Scenes.console import Console
 from Scenes.main_menu import MainMenu
 from Scenes.basement import Basement
 from utility.functions import get_input
@@ -11,7 +11,7 @@ class Game:
     def __init__(self):
         pygame.init()
 
-        self.basement = None # this will hold a reference to basement later
+        self.main_scene = None # this will hold a reference to our main scene
         self.screen_width = settings.SCREEN_WIDTH
         self.screen_height = settings.SCREEN_HEIGHT
 
@@ -28,16 +28,11 @@ class Game:
 
         pygame.display.set_caption("Isabella's Escape")
 
-        # if settings.FULLSCREEN:
-        #     self.screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN )
-        # else:
-        #     self.screen = pygame.display.set_mode((screen_width, screen_height))
-
         self.clock = pygame.time.Clock()
         self.scene_stack = []
-        self.debug = Debug(self)
+        self.console = Console(self)
 
-        self.pressed, self.just_pressed, self.joysticks = get_input()
+        self.pressed, self.just_pressed, self.joysticks = get_input(self)
 
     def run(self):
         self.load_scene(settings.START_SCENE)
@@ -46,21 +41,22 @@ class Game:
             raise ValueError("No scene set for the game")
 
         while True:
-            self.pressed, self.just_pressed, self.joysticks = get_input()
-            layers = ['background', 'obstacle', 'player', 'enemy', 'ui', 'debug']
+            self.pressed, self.just_pressed, self.joysticks = get_input(self)
+            if pygame.K_BACKQUOTE in self.just_pressed:
+                self.console.active = not self.console.active
+            layers = ['background', 'obstacle', 'player', 'enemy', 'ui', 'console']
             for layer in layers:
                 for scene in self.scene_stack: 
-                    if scene.layer == layer: 
+                    if scene.layer == layer and scene.active: 
                         scene.update()
                         scene.render()
                 if scene.layer is None:
-                    print('You forgot to set the layer for scene: ' + str(scene) + '! Defaulting to debug layer.')
-                    scene.layer = 'debug'
+                    self.console.log('You forgot to set the layer for scene: ' + str(scene) + '! Defaulting to ui layer.')
+                    scene.layer = 'ui'
 
-            self.debug.update()
-            self.debug.render()
-            self.debug.clear_data()
-            
+            self.console.update()
+            self.console.render()
+
             pygame.display.flip()
             self.clock.tick(settings.FRAME_LIMIT)  # Cap the frame rate
 
@@ -84,34 +80,31 @@ class Game:
         if scene in self.scene_stack:
             self.scene_stack.remove(scene)
         else:
-            print(f"Scene {scene} not found in stack")
-            print(f"Current scene stack: {self.scene_stack}")
+            self.console.log("Scene {scene} not found in stack")
+            self.console.log(f"Current scene stack: {self.scene_stack}")
 
     # optional pop parameter for easy scene cleanup when needed
-    def load_scene(self, scene, pop = False, scene_pop = None):
-        print(f"Loading scene: {scene}")
+    def load_scene(self, scene, main_scene = False, scene_pop = None):
+        self.console.log(f"Loading scene: {scene}")
         if scene in settings.SCENE_LIST:
-            if pop:
+            if main_scene:
+                self.main_scene = scene
+            if scene_pop:
                 # remove the scene to be popped
-                print(f"Removing scene: {scene_pop}")
+                self.console.log(f"Removing scene: {scene_pop}")
                 self.remove_scene(scene_pop)
-                print(f"New scene stack: {self.scene_stack}")
-            print(str(settings.SCENE_LIST[scene] +"(self)"))
+                self.console.log(f"New scene stack: {self.scene_stack}")
+            self.console.log(str(settings.SCENE_LIST[scene] +"(self)"))
             self.scene_stack.append(eval(settings.SCENE_LIST[scene] +"(self)"))
-            # if the scene was "basement" save a reference to it in .basement
-            if scene.lower() == "basement":
-                self.basement = self.scene_stack[-1]
-            print(f"Loaded scene: {scene}")
-            print(f"Current scene stack: {self.scene_stack}")
         else: 
-            print(f"Scene {scene} not found in scene list. Defaulting to MainMenu")
+            self.console.log(f"Scene {scene} not found in scene list. Defaulting to MainMenu")
             self.scene_stack.append(MainMenu(self))
 
     def spawn_player_entity(self, entity, position):
         self.player = entity(self, position)
         self.scene_stack.append(self.player)
-        print(f"Spawned player entity: {str(entity)} at position: ({position[0]}, {position[1]})")
+        self.console.log(f"Spawned player entity: {str(entity)} at position: ({position[0]}, {position[1]})")
 
     def spawn_entity(self, entity, position):
         self.scene_stack.append(entity(self, position))
-        print(f"Spawned entity: {str(entity)} at position: ({position[0]}, {position[1]})")
+        self.console.log(f"Spawned entity: {str(entity)} at position: ({position[0]}, {position[1]})")

@@ -8,7 +8,6 @@ import utility.functions as f
 class MainMenu(scene.Scene):
     def __init__(self, game):
         super().__init__(game)
-        self.game = game
         self.layer = "ui"
         
         self.background = f.make_transparent_surface((self.game.screen_width, self.game.screen_height))
@@ -22,9 +21,11 @@ class MainMenu(scene.Scene):
 
     def update(self):
         if pygame.K_RETURN in self.game.just_pressed:
-            self.game.load_scene("basement", True, self)
+            self.active = False
+            self.game.load_scene("basement", main_scene = True, scene_pop = self)
             # spawn the player at the center of the screen
             self.game.spawn_player_entity(player.Player, (self.game.screen_width / 2, self.game.screen_height / 2))
 
     def render(self):
-        self.screen.blit(self.background, (0, 0))
+        if self.active:
+            self.screen.blit(self.background, (0, 0))

@@ -1,10 +1,10 @@
 import pygame
-import Scenes.scene as scene
-import config.colors as colors
-from utility.vector import Vector2
 from utility.animated_sprite import AnimatedSprite
 from utility.spritesheet import SpriteSheet
 from utility.animation import Animation
+
+import Scenes.scene as scene
+import config.colors as colors
 
 class Player(scene.Scene):
     def __init__(self, game, position=(0, 0)):
@@ -14,25 +14,25 @@ class Player(scene.Scene):
         self.spritesheet = SpriteSheet("assets/Character/Girl-Sheet.png").load_grid_images(1, 44)
         # Load our Player Animations
         self.sprite = AnimatedSprite(animations={
-            "walk_down": Animation(images = self.spritesheet[0:4], dur = 5),
-            "walk_left": Animation(images = self.spritesheet[4:8], dur = 5),
-            "walk_right": Animation(images = self.spritesheet[8:12], dur = 5),
-            "walk_up": Animation(images = self.spritesheet[12:16], dur = 5),
-            "idle": Animation(images = self.spritesheet[0:2], dur = 60),
-            "death": Animation(images = self.spritesheet[40:44], dur = 6, loop=False)
+            "walk_down": Animation(images=self.spritesheet[0:4], dur=5),
+            "walk_left": Animation(images=self.spritesheet[4:8], dur=5),
+            "walk_right": Animation(images=self.spritesheet[8:12], dur=5),
+            "walk_up": Animation(images=self.spritesheet[12:16], dur=5),
+            "idle": Animation(images=self.spritesheet[0:2], dur=60),
+            "death": Animation(images=self.spritesheet[40:44], dur=6, loop=False)
         }, default_animation="idle")
 
-        self.position = Vector2(position[0], position[1])
-        self.velocity = Vector2(0, 0)
+        self.position = pygame.Vector2(position)
+        self.velocity = pygame.Vector2(0, 0)
         self.speed = 3.0
-        
+
         # track the sprites horizontal facing direction
         # false = right, true = left
         self.flip = False
 
-
     def handle_movement(self):
-        self.velocity = Vector2(0, 0)
+        # reset velocity
+        self.velocity = pygame.Vector2(0, 0)
 
         # update velocity based on joystick input
         if self.game.joysticks:
@@ -40,47 +40,65 @@ class Player(scene.Scene):
                 self.velocity.x = self.game.joysticks[joystick].get_axis(0) * self.speed
                 self.velocity.y = self.game.joysticks[joystick].get_axis(1) * self.speed
 
-        if self.game.pressed[pygame.K_LEFT]:
-            self.flip = True
+        # update velocity based on keyboard input 
+        if "left" in self.game.pressed:
             self.velocity.x = -self.speed
-        if self.game.pressed[pygame.K_RIGHT]:
-            self.flip = False
+        if "right" in self.game.pressed:
             self.velocity.x = self.speed
-        if self.game.pressed[pygame.K_UP]:
+        if "up" in  self.game.pressed:
             self.velocity.y = -self.speed
-        if self.game.pressed[pygame.K_DOWN]:
+        if "down" in self.game.pressed:
             self.velocity.y = self.speed
-
-        # if pygame.K_SPACE in self.game.just_pressed:
-        #     if self.sprite.current_animation == "walk":
-        #         self.sprite.switch_animation("hurt")
-        #     else:
-        #         self.sprite.switch_animation("walk")
 
         if self.velocity.x == 0 and self.velocity.y == 0:
             self.sprite.switch_animation("idle")
         else:
             if self.velocity.x < 0:
-                self.sprite.flip = True
                 self.sprite.switch_animation("walk_left")
             elif self.velocity.x > 0:
-                self.sprite.flip = False
                 self.sprite.switch_animation("walk_right")
             elif self.velocity.y < 0:
-                self.sprite.flip = False
                 self.sprite.switch_animation("walk_up")
             elif self.velocity.y > 0:
-                self.sprite.flip = False
                 self.sprite.switch_animation("walk_down")
 
-
-        self.velocity.scale_velocity()
+        if self.velocity.length() != 0:
+            self.velocity.scale_to_length(self.speed)
         self.position += self.velocity
-
 
     def update(self):
         self.handle_movement()
 
     def render(self):
         self.sprite.update()
-        self.screen.blit(self.sprite.image, self.position.pos())
+        self.screen.blit(self.sprite.image, self.position)
+
+    def elastic_collision_update(self, b2):
+        if self.position != b2.position:
+            # We're going to assume that the masses of the bodies are equal
+            m1, m2 = 1, 1
+
+            p1, p2 = self.position, b2.position
+
+            v1, v2 = self.velocity, b2.velocity
+
+            u = (p1 - p2).normalize()
+
+            v1_prime = (
+                v1 + (((2 * m2) / (m1 + m2)) * pygame.Vector2.dot(u, v2 - v1)) * u
+            )
+
+            v2_prime = (
+                v2 + (((2 * m1) / (m1 + m2)) * pygame.Vector2.dot(u, v1 - v2)) * u
+            )
+
+            self.velocity = v1_prime
+            b2.velocity = v2_prime
+
+
+def bodies_colliding(self, body_2) -> bool:
+    p1, r1 = self.position, self.radius
+    p2, r2 = body_2.position, body_2.radius
+    center_distance = (p2 - p1).magnitude()
+    min_distance = r1 + r2
+    return center_distance <= min_distance

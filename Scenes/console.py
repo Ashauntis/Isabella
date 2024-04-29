@@ -3,7 +3,7 @@ import config.settings as settings
 import Scenes.scene as scene
 import config.colors as colors
 import utility.functions as fn
-import config.input as input
+import utility.input as input
 
 # A panel for displaying debug information/text within the game
 class Console(scene.Scene):

@@ -20,7 +20,8 @@ class MainMenu(scene.Scene):
         f.blit_centered(self.press_start_text, self.background, (0.5, 0.75))
 
     def update(self):
-        if pygame.K_RETURN in self.game.just_pressed:
+        print(self.game.just_pressed)
+        if 'return' in self.game.just_pressed:
             self.active = False
             self.game.load_scene("basement", main_scene = True, scene_pop = self)
             # spawn the player at the center of the screen

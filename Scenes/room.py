@@ -72,8 +72,6 @@ class Room:
             22: self.tiles[24], # door bottom 1
             23: self.tiles[25], # door bottom 2
             24: self.tiles[26], # door bottom 3
-
-
         }
 
         # 40x22 allows for a 16x16 tileset with a 4 pixel top and bottom margin

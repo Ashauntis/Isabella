@@ -5,7 +5,7 @@ import config.colors as colors
 from Scenes.console import Console
 from Scenes.main_menu import MainMenu
 from Scenes.basement import Basement
-from utility.functions import get_input
+from utility.input import get_input
 
 class Game:
     def __init__(self):
@@ -32,7 +32,7 @@ class Game:
         self.scene_stack = []
         self.console = Console(self)
 
-        self.pressed, self.just_pressed, self.joysticks = get_input(self)
+        self.update_input()
 
     def run(self):
         self.load_scene(settings.START_SCENE)
@@ -41,7 +41,7 @@ class Game:
             raise ValueError("No scene set for the game")
 
         while True:
-            self.pressed, self.just_pressed, self.joysticks = get_input(self)
+            self.update_input()
             if pygame.K_BACKQUOTE in self.just_pressed:
                 self.console.active = not self.console.active
             layers = ['background', 'obstacle', 'player', 'enemy', 'ui', 'console']
@@ -108,3 +108,6 @@ class Game:
     def spawn_entity(self, entity, position):
         self.scene_stack.append(entity(self, position))
         self.console.log(f"Spawned entity: {str(entity)} at position: ({position[0]}, {position[1]})")
+
+    def update_input(self):
+        self.pressed, self.just_pressed, self.joysticks = get_input(self)

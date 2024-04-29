@@ -16,46 +16,6 @@ def load_asset(asset_path: str):
 def constrain(val, min_val, max_val):
     return min(max_val, max(min_val, val))
 
-# returns an array of input types
-def get_input(game):
-
-    # Handle Keyboard Events
-    pressed = pygame.key.get_pressed()
-    just_pressed = []
-    joysticks = {}    
-    
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-                pygame.quit()
-                sys.exit()
-
-        if event.type == pygame.KEYDOWN:
-            # print(f"Key Down: {event.key}")
-            game.console.log(f"Key Down: {event.key}")
-            just_pressed.append(event.key)
-
-        # Handle Controller Events
-
-
-        if event.type == pygame.JOYDEVICEADDED:
-            joy = pygame.joystick.Joystick(event.device_index)
-            joysticks[joy.get_instance_id()] = joy
-            print(f"Joystick {joy.get_instance_id()} connected")
-
-        if event.type == pygame.JOYDEVICEREMOVED:
-            del joysticks[event.instance_id]
-            print(f"Joystick {event.instance_id} disconnected")
-
-        if event.type == pygame.JOYBUTTONDOWN:
-            just_pressed.append(event.button)
-
-    # Toggle our Debug Setting
-    if pygame.K_F11 in just_pressed:
-        print(f"Toggling Debug Mode: {settings.DEBUG}")
-        settings.DEBUG = not settings.DEBUG
-
-    return pressed, just_pressed, joysticks
-
 def make_text(text:str, fontSize: int, color: tuple=colors.WHITE, font: str=None):
 
     if font is None:

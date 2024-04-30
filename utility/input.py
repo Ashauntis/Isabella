@@ -9,6 +9,7 @@ input_map = {
     "down": [pygame.K_DOWN, pygame.K_s],
     "space": [pygame.K_SPACE],
     "return": [pygame.K_RETURN],
+    "console": [pygame.K_BACKQUOTE],
 }
 
 numbers = [

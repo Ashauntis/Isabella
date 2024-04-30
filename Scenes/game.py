@@ -11,7 +11,9 @@ class Game:
     def __init__(self):
         pygame.init()
 
-        self.main_scene = None # this will hold a reference to our main scene
+        self.room_colliders = []
+        self.body_colliders = []
+
         self.screen_width = settings.SCREEN_WIDTH
         self.screen_height = settings.SCREEN_HEIGHT
 
@@ -42,7 +44,7 @@ class Game:
 
         while True:
             self.update_input()
-            if pygame.K_BACKQUOTE in self.just_pressed:
+            if "console" in self.just_pressed:
                 self.console.active = not self.console.active
             layers = ['background', 'obstacle', 'player', 'enemy', 'ui', 'console']
             for layer in layers:

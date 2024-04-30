@@ -1,7 +1,7 @@
 import pygame
 
 class Scene:
-    def __init__(self, game):
+    def __init__(self, game = None):
         self.game = game
         self.screen = game.screen
         self.time = game.clock.get_time()

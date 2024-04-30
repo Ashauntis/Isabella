@@ -64,6 +64,12 @@ class Player(scene.Scene):
 
         if self.velocity.length() != 0:
             self.velocity.scale_to_length(self.speed)
+
+
+        # check for collisions
+        for collider in self.game.room_colliders:
+            self.elastic_collision_update(collider)
+
         self.position += self.velocity
 
     def update(self):

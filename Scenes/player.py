@@ -68,7 +68,9 @@ class Player(scene.Scene):
 
         # check for collisions
         for collider in self.game.room_colliders:
-            self.elastic_collision_update(collider)
+            if self.bodies_colliding(collider):
+                self.velocity = pygame.Vector2(0, 0)
+                break
 
         self.position += self.velocity
 
@@ -102,9 +104,7 @@ class Player(scene.Scene):
             b2.velocity = v2_prime
 
 
-def bodies_colliding(self, body_2) -> bool:
-    p1, r1 = self.position, self.radius
-    p2, r2 = body_2.position, body_2.radius
-    center_distance = (p2 - p1).magnitude()
-    min_distance = r1 + r2
-    return center_distance <= min_distance
+    def bodies_colliding(self, b2) -> bool:
+        r1 = self.sprite.image.get_rect(topleft=self.position)
+        r2 = b2.rect
+        return r1.colliderect(r2)

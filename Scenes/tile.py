@@ -31,6 +31,7 @@ class Tile:
         self.collider = collider
         if self.collider:
             self.position = pygame.math.Vector2(position)
+            self.rect = self.tile_surface.get_rect(topleft = self.position)
             self.velocity = pygame.math.Vector2(0, 0) 
             game.room_colliders.append(self)
             game.console.log(str(game.room_colliders))

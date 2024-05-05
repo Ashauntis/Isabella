@@ -23,8 +23,6 @@ class MainMenu(scene.Scene):
         if 'return' in self.game.just_pressed:
             self.active = False
             self.game.load_scene("basement", main_scene = True, scene_pop = self)
-            # spawn the player at the center of the screen
-            self.game.spawn_player_entity(player.Player, (self.game.screen_width / 2, self.game.screen_height / 2))
 
     def render(self):
         if self.active:

@@ -11,9 +11,6 @@ class Tile(Body):
     def __init__(self, game, image, type, position = (0, 0), tile_size = (16, 16)):
         super().__init__(game, position)
 
-        if not hasattr(game.level_scene, "tiles"): 
-            raise AttributeError("The game object must have a level_scene attribute with a tiles attribute to add tiles to the scene.")
-        
         game.level_scene.tiles.add(self)
 
         self.image = image
@@ -29,3 +26,7 @@ class Tile(Body):
             self.solid = True
 
         self.rect = self.image.get_rect(topleft = position)
+
+        def update(self):
+            pass
+        

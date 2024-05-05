@@ -41,8 +41,8 @@ class Basement(scene.Scene):
 
         self.make_room()
         
-        self.player = pygame.sprite.Group()
-        self.player.add(player.Player(game, (self.game.screen_width / 2, self.game.screen_height / 2)))
+        self.players = pygame.sprite.Group()
+        self.players.add(player.Player(game, (self.game.screen_width / 2, self.game.screen_height / 2)))
         
     def make_room(self):        
         # Manage our location and surroundings
@@ -113,24 +113,20 @@ class Basement(scene.Scene):
         elif pygame.K_RIGHT in self.game.just_pressed and "east" in self.room.flags:
             self.transition_room(direction = "east")
 
-        collisions = pygame.sprite.groupcollide(self.player, self.tiles, False, False, collided=self.on_collision)
-        if collisions:
-            print(collisions)
-        #     for player in collisions:
-        #         for tile in collisions[player]:
-        #             print(f"Player colliding with {tile.type} at {tile.position}")
-        #             if tile.solid:
-        #                 # move the player just outside the tile
-        #                 if player.velocity.x > 0:
-        #                     player.position.x = tile.rect.left - player.rect.width
-        #                 elif player.velocity.x < 0:
-        #                     player.position.x = tile.rect.right
+        self.players.update()
+        self.tiles.update()
+
+        collisions = pygame.sprite.groupcollide(self.players, self.tiles, False, False)
+        for player in collisions:
+            for tile in collisions[player]:
+                player.on_collision(tile)
 
     def render(self):
         if self.transition_time > 0:
             self.screen.blit(self.transition_surface, (0, 0))
         else:
             self.screen.blit(self.room_surface, (0, 0))
+        self.players.draw(self.screen)
 
     def on_collision(scene, player, other):
        player.on_collision(other) 

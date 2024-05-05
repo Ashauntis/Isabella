@@ -25,6 +25,7 @@ class Player(body.Body):
             "idle": Animation(images=self.spritesheet[0:2], dur=60),
             "death": Animation(images=self.spritesheet[40:44], dur=6, loop=False)
         }, default_animation="idle")
+        self.image = self.animations.image
         self.rect = self.animations.image.get_rect(topleft=self.position)
 
         self.speed = 3.0
@@ -73,51 +74,55 @@ class Player(body.Body):
 
     def update(self):
         self.handle_movement()
+        self.animations.update()
+        self.image = self.animations.image
 
     def render(self):
-        self.animations.update()
         self.game.screen.blit(self.animations.image, self.position)
 
     def on_collision(self, other):
-        if other.type == "wall":
-            if self.velocity.x > 0:
-                self.position.x = other.rect.left - self.rect.width
-            elif self.velocity.x < 0:
-                self.position.x = other.rect.right
-            if self.velocity.y > 0:
-                self.position.y = other.rect.top - self.rect.height
-            elif self.velocity.y < 0:
-                self.position.y = other.rect.bottom
-        elif other.type == "enemy":
-            self.animations.switch_animation("death")
-            self.active = False
-            self.game.remove_scene(self)
-            self.game.load_scene("MainMenu", scene_pop=self.game.scene_stack[-1])
-            self.game.console.log("Player died. Returning to main menu.")
-        elif other.type == "pickup":
-            self.game.console.log(f"Player picked up {other.item}")
-            self.game.remove_scene(other)
-            self.game.player.inventory.append(other.item)
-            self.game.console.log(f"Player inventory: {self.game.player.inventory}")
-        elif other.type == "door":
-            if other.direction == "north":
-                self.game.load_scene("Basement", scene_pop=self.game.scene_stack[-1])
-            elif other.direction == "south":
-                self.game.load_scene("Basement", scene_pop=self.game.scene_stack[-1])
-            elif other.direction == "west":
-                self.game.load_scene("Basement", scene_pop=self.game.scene_stack[-1])
-            elif other.direction == "east":
-                self.game.load_scene("Basement", scene_pop=self.game.scene_stack[-1])
-        else:
-            self.game.console.log(f"Player collided with {other.type} at {other.position}")
-            self.game.console.log(f"Player position: {self.position}")
-            self.game.console.log(f"Player velocity: {self.velocity}")
-            self.game.console.log(f"Player rect: {self.rect}")
-            self.game.console.log(f"Other rect: {other.rect}")
-            self.game.console.log(f"Other position: {other.position}")
-            self.game.console.log(f"Other type: {other.type}")
-            self.game.console.log(f"Other solid: {other.solid}")
-            self.game.console.log(f"Other image: {other.image}")
-            self.game.console.log(f"Other rect: {other.rect}")
-            self.game.console.log(f"Other position: {other.position}")
-            self.game.console.log(f"Other type: {other.type}")
+        self.game.console.log(f"Player collided with {other.type}")
+        pass
+
+        # if other.type == "wall":
+        #     if self.velocity.x > 0:
+        #         self.position.x = other.rect.left - self.rect.width
+        #     elif self.velocity.x < 0:
+        #         self.position.x = other.rect.right
+        #     if self.velocity.y > 0:
+        #         self.position.y = other.rect.top - self.rect.height
+        #     elif self.velocity.y < 0:
+        #         self.position.y = other.rect.bottom
+        # elif other.type == "enemy":
+        #     self.animations.switch_animation("death")
+        #     self.active = False
+        #     self.game.remove_scene(self)
+        #     self.game.load_scene("MainMenu", scene_pop=self.game.scene_stack[-1])
+        #     self.game.console.log("Player died. Returning to main menu.")
+        # elif other.type == "pickup":
+        #     self.game.console.log(f"Player picked up {other.item}")
+        #     self.game.remove_scene(other)
+        #     self.game.player.inventory.append(other.item)
+        #     self.game.console.log(f"Player inventory: {self.game.player.inventory}")
+        # elif other.type == "door":
+        #     if other.direction == "north":
+        #         self.game.load_scene("Basement", scene_pop=self.game.scene_stack[-1])
+        #     elif other.direction == "south":
+        #         self.game.load_scene("Basement", scene_pop=self.game.scene_stack[-1])
+        #     elif other.direction == "west":
+        #         self.game.load_scene("Basement", scene_pop=self.game.scene_stack[-1])
+        #     elif other.direction == "east":
+        #         self.game.load_scene("Basement", scene_pop=self.game.scene_stack[-1])
+        # else:
+        #     self.game.console.log(f"Player collided with {other.type} at {other.position}")
+        #     self.game.console.log(f"Player position: {self.position}")
+        #     self.game.console.log(f"Player velocity: {self.velocity}")
+        #     self.game.console.log(f"Player rect: {self.rect}")
+        #     self.game.console.log(f"Other rect: {other.rect}")
+        #     self.game.console.log(f"Other position: {other.position}")
+        #     self.game.console.log(f"Other type: {other.type}")
+        #     self.game.console.log(f"Other solid: {other.solid}")
+        #     self.game.console.log(f"Other image: {other.image}")
+        #     self.game.console.log(f"Other rect: {other.rect}")
+        #     self.game.console.log(f"Other position: {other.position}")
+        #     self.game.console.log(f"Other type: {other.type}")

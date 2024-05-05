@@ -8,54 +8,24 @@ import utility.functions as fn
 
 
 class Tile(Body):
-    def __init__(self, game, image, target = False, position = (0, 0), collider = False, tile_size = (16, 16)):
+    def __init__(self, game, image, type, position = (0, 0), tile_size = (16, 16)):
         super().__init__(game, position)
 
-        print(f'level scene: {game.level_scene}')
-        print(hasattr(game.level_scene, "tiles"))
-
         if not hasattr(game.level_scene, "tiles"): 
-            return
+            raise AttributeError("The game object must have a level_scene attribute with a tiles attribute to add tiles to the scene.")
         
         game.level_scene.tiles.add(self)
 
         self.image = image
+        self.solid = False
         target_surface = game.level_scene.room_surface
 
         image_surface = fn.make_transparent_surface((tile_size[0], tile_size[1]))
         image_surface.blit(image, (0, 0))
         target_surface.blit(image_surface, position)
 
+        self.type = type
+        if self.type == "wall":
+            self.solid = True
+
         self.rect = self.image.get_rect(topleft = position)
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        # self.tile_surface = f.make_transparent_surface(
-        #     (tile_size[0], tile_size[1]))
-        # self.tile_surface.fill((colors.BLACK))
-
-        # self.tile_surface.blit(image, (0, 0))
-        # if target: 
-        #     target.blit(image, position)
-
-        # self.collider = collider
-        # if self.collider:
-        #     self.position = pygame.math.Vector2(position)
-        #     self.rect = self.tile_surface.get_rect(topleft = self.position)
-        #     self.velocity = pygame.math.Vector2(0, 0) 
-        #     game.room_colliders.append(self)
-        #     game.console.log(str(game.room_colliders))

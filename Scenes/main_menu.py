@@ -13,10 +13,10 @@ class MainMenu(scene.Scene):
         self.background = f.make_transparent_surface((self.game.screen_width, self.game.screen_height))
         self.background.fill((colors.CREAM))
 
-        self.title_text = f.make_text("Isabella's Escape", 60)
+        self.title_text = f.make_text("Isabella's Escape", 60, color=colors.BLACK)
         f.blit_centered(self.title_text, self.background, (0.5, 0.25))
 
-        self.press_start_text = f.make_text("Press Start", 30)
+        self.press_start_text = f.make_text("Press Start", 30, color=colors.BLACK)
         f.blit_centered(self.press_start_text, self.background, (0.5, 0.75))
 
     def update(self):

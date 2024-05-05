@@ -40,7 +40,7 @@ class Room(scene.Scene):
     def build_room(self, spritesheet):
         self.tile_images = spritesheet.load_grid_images(17, 6)
         self.tileset = {
-            0: Tile(self.game, self.tile_images[7]).image, # basic floor
+            0: Tile(self.game, self.tile_images[7], "floor").image, # basic floor
 
             ## walls
             1: self.tile_images[1], # wall top
@@ -82,35 +82,35 @@ class Room(scene.Scene):
 
         # draw the walls on all four sides
         for i in range(40):
-            tilemap[i][0] = Tile(self.game, self.tileset[1], collider=True, target=self.room_surface, position=(i*16, 0+4))
-            tilemap[i][21] = Tile(self.game, self.tileset[4], collider=True, target=self.room_surface, position=(i*16, 21*16+4))
+            tilemap[i][0] = Tile(self.game, self.tileset[1], "wall", position=(i*16, 0+4))
+            tilemap[i][21] = Tile(self.game, self.tileset[4], "wall", position=(i*16, 21*16+4))
         for i in range(22):
-            tilemap[0][i] = Tile(self.game, self.tileset[2], collider=True, target=self.room_surface, position=(0, i*16+4))
-            tilemap[39][i] = Tile(self.game, self.tileset[3], collider=True, target=self.room_surface, position=(39*16, i*16+4))
+            tilemap[0][i] = Tile(self.game, self.tileset[2], "wall", position=(0, i*16+4))
+            tilemap[39][i] = Tile(self.game, self.tileset[3], "wall", position=(39*16, i*16+4))
 
         # set our corners to the appropriate corner tiles
-        tilemap[0][0] = Tile(self.game, self.tileset[5], collider=True, target=self.room_surface, position=(0, 0+4))
-        tilemap[39][0] = Tile(self.game, self.tileset[6], collider=True, target=self.room_surface, position=(39*16, 0+4))
-        tilemap[0][21] = Tile(self.game, self.tileset[7], collider=True, target=self.room_surface, position=(0, 21*16+4))
-        tilemap[39][21] = Tile(self.game, self.tileset[8], collider=True, target=self.room_surface, position=(39*16, 21*16+4))
+        tilemap[0][0] = Tile(self.game, self.tileset[5], "wall", position=(0, 0+4))
+        tilemap[39][0] = Tile(self.game, self.tileset[6], "wall", position=(39*16, 0+4))
+        tilemap[0][21] = Tile(self.game, self.tileset[7], "wall", position=(0, 21*16+4))
+        tilemap[39][21] = Tile(self.game, self.tileset[8], "wall", position=(39*16, 21*16+4))
 
 
         # set a floor tile in the middle of each door along the wall
         # where a door exists
         if "north" in self.flags:
-            tilemap[19][0] = Tile(self.game, self.tileset[0], target=self.room_surface, position=(19*16, 0+4))
+            tilemap[19][0] = Tile(self.game, self.tileset[0], "door", position=(19*16, 0+4))
         if "south" in self.flags:
-            tilemap[19][21] = Tile(self.game, self.tileset[0], target=self.room_surface, position=(19*16, 21*16+4))
+            tilemap[19][21] = Tile(self.game, self.tileset[0], "door", position=(19*16, 21*16+4))
         if "east" in self.flags:
-            tilemap[39][11] = Tile(self.game, self.tileset[0], target=self.room_surface, position=(39*16, 11*16+4))
+            tilemap[39][11] = Tile(self.game, self.tileset[0], "door", position=(39*16, 11*16+4))
         if "west" in self.flags:
-            tilemap[0][11] = Tile(self.game, self.tileset[0], target=self.room_surface, position=(0, 11*16+4))
+            tilemap[0][11] = Tile(self.game, self.tileset[0], "door", position=(0, 11*16+4))
 
         # iterate through the tilemap and draw the appropriate tile with a 4 pixel margin on the top and bottom
         for x in range(40):
             for y in range(22):
                 if type(tilemap[x][y]) == int:
-                    tilemap[x][y] = Tile(self.game, self.tileset[tilemap[x][y]], target=self.room_surface, position=(x*16, y*16+4))
+                    tilemap[x][y] = Tile(self.game, self.tileset[tilemap[x][y]], "floor", position=(x*16, y*16+4))
 
         # now that the floor has been rendered, render the doors
         # on top of the floor

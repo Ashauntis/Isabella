@@ -3,17 +3,21 @@ from utility.animated_sprite import AnimatedSprite
 from utility.spritesheet import SpriteSheet
 from utility.animation import Animation
 
-import Scenes.scene as scene
+import utility.body as body
 import config.colors as colors
 
-class Player(scene.Scene):
+class Player(body.Body):
     def __init__(self, game, position=(0, 0)):
-        super().__init__(game)
-        self.game = game
+        super().__init__(game, position)
         self.layer = "player"
+        self.position = pygame.Vector2(position)
+
+        self.active = True
+
         self.spritesheet = SpriteSheet("assets/Character/Girl-Sheet.png").load_grid_images(1, 44)
-        # Load our Player Animations
-        self.sprite = AnimatedSprite(animations={
+
+        self.sprite = pygame.sprite.Sprite()
+        self.animations = AnimatedSprite(animations={
             "walk_down": Animation(images=self.spritesheet[0:4], dur=5),
             "walk_left": Animation(images=self.spritesheet[4:8], dur=5),
             "walk_right": Animation(images=self.spritesheet[8:12], dur=5),
@@ -22,8 +26,6 @@ class Player(scene.Scene):
             "death": Animation(images=self.spritesheet[40:44], dur=6, loop=False)
         }, default_animation="idle")
 
-        self.position = pygame.Vector2(position)
-        self.velocity = pygame.Vector2(0, 0)
         self.speed = 3.0
 
         # track the sprites horizontal facing direction
@@ -51,16 +53,16 @@ class Player(scene.Scene):
             self.velocity.y = self.speed
 
         if self.velocity.x == 0 and self.velocity.y == 0:
-            self.sprite.switch_animation("idle")
+            self.animations.switch_animation("idle")
         else:
             if self.velocity.x < 0:
-                self.sprite.switch_animation("walk_left")
+                self.animations.switch_animation("walk_left")
             elif self.velocity.x > 0:
-                self.sprite.switch_animation("walk_right")
+                self.animations.switch_animation("walk_right")
             elif self.velocity.y < 0:
-                self.sprite.switch_animation("walk_up")
+                self.animations.switch_animation("walk_up")
             elif self.velocity.y > 0:
-                self.sprite.switch_animation("walk_down")
+                self.animations.switch_animation("walk_down")
 
         if self.velocity.length() != 0:
             self.velocity.scale_to_length(self.speed)
@@ -78,8 +80,8 @@ class Player(scene.Scene):
         self.handle_movement()
 
     def render(self):
-        self.sprite.update()
-        self.screen.blit(self.sprite.image, self.position)
+        self.animations.update()
+        self.game.screen.blit(self.animations.image, self.position)
 
     def elastic_collision_update(self, b2):
         if self.position != b2.position:
@@ -105,6 +107,6 @@ class Player(scene.Scene):
 
 
     def bodies_colliding(self, b2) -> bool:
-        r1 = self.sprite.image.get_rect(topleft=self.position)
+        r1 = self.animations.image.get_rect(topleft=self.position)
         r2 = b2.rect
         return r1.colliderect(r2)

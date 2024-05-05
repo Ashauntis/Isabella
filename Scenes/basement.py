@@ -1,11 +1,12 @@
 import pygame
-import numpy as np
+
 import Scenes.scene as scene
 import config.colors as colors
 import utility.mapmaker as mapmaker
 from Scenes.room import Room
 from utility.spritesheet import SpriteSheet
 import utility.functions as fn
+import Scenes.player as player
 
 class Basement(scene.Scene):
     def __init__(self, game, map_size = 20):
@@ -37,7 +38,9 @@ class Basement(scene.Scene):
 
         self.make_room()
         
-
+        self.player = pygame.sprite.Group()
+        p = player.Player(game, (self.game.screen_width / 2, self.game.screen_height / 2))
+        self.player.add(p)
         
     def make_room(self):        
         # Manage our location and surroundings

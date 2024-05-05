@@ -81,15 +81,11 @@ def get_input(game):
                 sys.exit()
 
         if event.type == pygame.KEYDOWN:
-            # print(f"Key Down: {event.key}")
             for input, options in input_map.items(): 
                 if event.key in input_map[input]:
                     just_pressed.append(input)
-                    print(f"Key Down: {game.just_pressed}")
-            game.console.log(f"Key Down: {event.key}")
 
         # Handle Controller Events
-
 
         if event.type == pygame.JOYDEVICEADDED:
             joy = pygame.joystick.Joystick(event.device_index)

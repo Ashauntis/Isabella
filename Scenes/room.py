@@ -40,7 +40,7 @@ class Room(scene.Scene):
     def build_room(self, spritesheet):
         self.tile_images = spritesheet.load_grid_images(17, 6)
         self.tileset = {
-            0: Tile(self.game, self.tile_images[7]).tile_surface, # basic floor
+            0: Tile(self.game, self.tile_images[7]).image, # basic floor
 
             ## walls
             1: self.tile_images[1], # wall top

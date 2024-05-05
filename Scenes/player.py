@@ -69,10 +69,10 @@ class Player(body.Body):
 
 
         # check for collisions
-        for collider in self.game.room_colliders:
-            if self.bodies_colliding(collider):
-                self.velocity = pygame.Vector2(0, 0)
-                break
+        # for collider in self.game.room_colliders:
+        #     if self.bodies_colliding(collider):
+        #         self.velocity = pygame.Vector2(0, 0)
+        #         break
 
         self.position += self.velocity
 

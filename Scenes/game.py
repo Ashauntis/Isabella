@@ -11,8 +11,7 @@ class Game:
     def __init__(self):
         pygame.init()
 
-        self.room_colliders = []
-        self.body_colliders = []
+        self.level = None
 
         self.screen_width = settings.SCREEN_WIDTH
         self.screen_height = settings.SCREEN_HEIGHT

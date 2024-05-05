@@ -16,6 +16,8 @@ class Basement(scene.Scene):
         self.layer = "background"
         self.flags = 0
 
+        self.game.level_scene = self
+
         # track what room we're in
         self.current_location = (map_size//2, map_size//2)
 
@@ -24,11 +26,12 @@ class Basement(scene.Scene):
         self.old_room = None
         self.transition_duration = 0
         self.transition_time = 0
-        self.transition_speed = 1
+        self.transition_speed = 10
         self.transition_direction = "None"
 
         # create our floor
         self.level_map = mapmaker.make_floor(size=map_size)
+        self.tiles = pygame.sprite.Group()
 
         for x in range(self.level_map.shape[0]):
             for y in range(self.level_map.shape[1]):
@@ -39,14 +42,13 @@ class Basement(scene.Scene):
         self.make_room()
         
         self.player = pygame.sprite.Group()
-        p = player.Player(game, (self.game.screen_width / 2, self.game.screen_height / 2))
-        self.player.add(p)
+        self.player.add(player.Player(game, (self.game.screen_width / 2, self.game.screen_height / 2)))
         
     def make_room(self):        
         # Manage our location and surroundings
+        self.room_surface = self.level_map[self.current_location]["room"].room_surface
         self.room = self.level_map[self.current_location]["room"]
         self.room.build_room(SpriteSheet("assets/DungeonStarter/DungeonStarter.png"))
-        self.room_surface = self.level_map[self.current_location]["room"].room_surface
 
     def transition_room(self, direction = "north", duration = 60):
         return

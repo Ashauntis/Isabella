@@ -9,6 +9,13 @@ class Body(pygame.sprite.Sprite):
         self.position = pygame.math.Vector2(position)
         self.velocity = pygame.math.Vector2(0, 0)
 
+        self.collisions = {
+            "top": False,
+            "bottom": False,
+            "left": False,
+            "right": False
+        }
+
         # variables to track size and shape
         self.image = None
         self.rect = None
@@ -21,3 +28,6 @@ class Body(pygame.sprite.Sprite):
     def draw(self):
         if self.visible:
             self.game.screen.blit(self.image, self.rect)
+
+    def on_collision(self, other):
+        print(f"Body collided with {other.type}")
